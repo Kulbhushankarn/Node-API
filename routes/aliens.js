@@ -1,52 +1,83 @@
-const express = require('express')
-const router = express.Router()
-const Alien = require('../models/alien')
+const express = require('express');
+const alienRouter = express.Router();
 
+module.exports = (Alien) => {
+  // Route to get aliens filtered by name and tech
+  alienRouter.get('/', (req, res) => {
+    const { name, tech } = req.query;
+    let query = Alien.find();
 
-router.get('/', async(req,res) => {
-    try{
-           const aliens = await Alien.find()
-           res.json(aliens)
-    }catch(err){
-        res.send('Error ' + err)
-    }
-})
-
-router.get('/:id', async(req,res) => {
-    try{
-           const alien = await Alien.findById(req.params.id)
-           res.json(alien)
-    }catch(err){
-        res.send('Error ' + err)
-    }
-})
-
-
-router.post('/', async(req,res) => {
-    const alien = new Alien({
-        name: req.body.name,
-        tech: req.body.tech,
-        sub: req.body.sub
-    })
-
-    try{
-        const a1 =  await alien.save() 
-        res.json(a1)
-    }catch(err){
-        res.send('Error')
-    }
-})
-
-router.patch('/:id',async(req,res)=> {
-    try{
-        const alien = await Alien.findById(req.params.id) 
-        alien.sub = req.body.sub
-        const a1 = await alien.save()
-        res.json(a1)   
-    }catch(err){
-        res.send('Error')
+    if (name) {
+      query = query.byName(name);
     }
 
-})
+    if (tech) {
+      query = query.byTech(tech);
+    }
 
-module.exports = router
+    query.exec((err, aliens) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send(err);
+      } else {
+        res.json(aliens);
+      }
+    });
+  });
+
+  // Route to add a new alien
+  alienRouter.post('/', (req, res) => {
+    const { name, tech, sub } = req.body;
+
+    const newAlien = new Alien({
+      name,
+      tech,
+      sub
+    });
+
+    newAlien.save((err, alien) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send(err);
+      } else {
+        res.json(alien);
+      }
+    });
+  });
+
+  // Route to update an existing alien
+  alienRouter.patch('/:id', (req, res) => {
+    const { id } = req.params;
+    const { name, tech, sub } = req.body;
+
+    Alien.findByIdAndUpdate(
+      id,
+      { name, tech, sub },
+      { new: true },
+      (err, alien) => {
+        if (err) {
+          console.error(err);
+          res.status(500).send(err);
+        } else {
+          res.json(alien);
+        }
+      }
+    );
+  });
+
+  // Route to delete an alien
+  alienRouter.delete('/:id', (req, res) => {
+    const { id } = req.params;
+
+    Alien.findByIdAndDelete(id, (err) => {
+      if (err) {
+        console.error(err);
+        res.status(500).send(err);
+      } else {
+        res.json({ message: 'Data deleted successfully' });
+      }
+    });
+  });
+
+  return alienRouter;
+};

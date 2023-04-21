@@ -18,5 +18,8 @@ const alienSchema = new mongoose.Schema({
     }
 
 })
+alienSchema.query.byTech = function(tech) {
+    return this.where({tech: tech});
+}
 
 module.exports = mongoose.model('Alien',alienSchema)
