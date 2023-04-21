@@ -2,7 +2,7 @@ const express = require('express');
 const alienRouter = express.Router();
 
 module.exports = (Alien) => {
-  // Route to get aliens filtered by name and tech
+  // Route to get data filtered by name and tech
   alienRouter.get('/', (req, res) => {
     const { name, tech } = req.query;
     let query = Alien.find();
@@ -25,7 +25,7 @@ module.exports = (Alien) => {
     });
   });
 
-  // Route to add a new alien
+  // Route to add a new data
   alienRouter.post('/', (req, res) => {
     const { name, tech, sub } = req.body;
 
@@ -45,7 +45,7 @@ module.exports = (Alien) => {
     });
   });
 
-  // Route to update an existing alien
+  // Route to update an existing data
   alienRouter.patch('/:id', (req, res) => {
     const { id } = req.params;
     const { name, tech, sub } = req.body;
@@ -65,7 +65,7 @@ module.exports = (Alien) => {
     );
   });
 
-  // Route to delete an alien
+  // Route to delete an data
   alienRouter.delete('/:id', (req, res) => {
     const { id } = req.params;
 
