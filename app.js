@@ -3,6 +3,9 @@ const mongoose = require('mongoose')
 const url = 'mongodb://localhost/AlienDBex'
 
 const app = express()
+const cors = require('cors')
+
+app.use(cors());
 
 mongoose.connect(url, {useNewUrlParser:true})
 const con = mongoose.connection
@@ -15,11 +18,11 @@ con.on('open', () => {
 app.use(express.json())
 
 const alienSchema = new mongoose.Schema({
-    name: {
+    email: {
         type: String,
         required: true
     },
-    tech: {
+    password: {
         type: String,
         required: true
     },
@@ -30,11 +33,11 @@ const alienSchema = new mongoose.Schema({
     }
 })
 
-alienSchema.query.byName = function(name){
-    return this.where({name: new RegExp(name, 'i')});
+alienSchema.query.byName = function(email){
+    return this.where({email: new RegExp(email, 'i')});
 };
-alienSchema.query.byTech = function(tech){
-    return this.where({tech: new RegExp(tech, 'i')});
+alienSchema.query.byTech = function(password){
+    return this.where({password: new RegExp(password, 'i')});
 };
 
 const Alien = mongoose.model('Alien', alienSchema);
@@ -43,6 +46,6 @@ const Alien = mongoose.model('Alien', alienSchema);
 const alienRouter = require('./routes/aliens')(Alien);
 app.use('/aliens',alienRouter)
 
-app.listen(9000, () => {
+app.listen(4000, () => {
     console.log('Server started')
 })

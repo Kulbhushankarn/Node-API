@@ -4,15 +4,15 @@ const alienRouter = express.Router();
 module.exports = (Alien) => {
   // Route to get data filtered by name and tech
   alienRouter.get('/', (req, res) => {
-    const { name, tech } = req.query;
+    const { email, password } = req.query;
     let query = Alien.find();
 
-    if (name) {
-      query = query.byName(name);
+    if (email) {
+      query = query.byEmail(email);
     }
 
-    if (tech) {
-      query = query.byTech(tech);
+    if (password) {
+      query = query.bypassword(password);
     }
 
     query.exec((err, aliens) => {
@@ -27,11 +27,11 @@ module.exports = (Alien) => {
 
   // Route to add a new data
   alienRouter.post('/', (req, res) => {
-    const { name, tech, sub } = req.body;
+    const { email, password, sub } = req.body;
 
     const newAlien = new Alien({
-      name,
-      tech,
+      email,
+      password,
       sub
     });
 
@@ -48,11 +48,11 @@ module.exports = (Alien) => {
   // Route to update an existing data
   alienRouter.patch('/:id', (req, res) => {
     const { id } = req.params;
-    const { name, tech, sub } = req.body;
+    const { email, password, sub } = req.body;
 
     Alien.findByIdAndUpdate(
       id,
-      { name, tech, sub },
+      { email, password, sub },
       { new: true },
       (err, alien) => {
         if (err) {
@@ -74,10 +74,11 @@ module.exports = (Alien) => {
         console.error(err);
         res.status(500).send(err);
       } else {
-        res.json({ message: 'Data deleted successfully' });
+        res.json({ message: 'Data Deleted Successfully' });
       }
     });
   });
 
   return alienRouter;
+
 };
